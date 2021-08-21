@@ -1,0 +1,48 @@
+plugins {
+    id 'java-library'
+    id 'maven-publish'
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter:2.5.4'
+	implementation 'org.springframework.boot:spring-boot-starter-webflux:2.5.4'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test:2.5.4'
+}
+
+group = 'org.brainframe'
+version = '1.0.0-SNAPSHOT'
+description = 'Restful APIs for brainframe'
+sourceCompatibility = '1.8'
+targetCompatibility = '1.8'
+
+task sourcesJar(type: Jar) {
+    archiveClassifier.set('sources')
+    from(sourceSets.main.allJava)
+}
+
+task testsJar(type: Jar) {
+    archiveClassifier.set('tests')
+    from(sourceSets.test.output)
+}
+
+// just an alias
+task install(dependsOn: ['build', 'publishToMavenLocal'])
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            from(components.java)
+            artifact(sourcesJar)
+            artifact(testsJar)
+        }
+    }
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+//    options.compilerArgs.add('-Xlint:all')
+}
