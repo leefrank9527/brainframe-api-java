@@ -1,5 +1,8 @@
 package com.brainframe.api.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import java.util.HashMap;
 import java.util.Map;
 
 public class StreamConfiguration {
@@ -7,10 +10,10 @@ public class StreamConfiguration {
     private String name;
     private Long premises_id;
     private String connection_type;
-    private Map<String,Object> connection_options;
-    private Map<String,Object> runtime_options;
+    private Map<String, Object> connection_options = new HashMap<>();
+    private Map<String, Object> runtime_options = new HashMap<>();
 
-    private Map<String,Object> metadata;
+    private Map<String, Object> metadata = new HashMap<>();
 
     public Long getId() {
         return id;
@@ -66,5 +69,20 @@ public class StreamConfiguration {
 
     public void setMetadata(Map<String, Object> metadata) {
         this.metadata = metadata;
+    }
+
+    @JsonIgnore
+    public void putConnectionOption(String key, Object value) {
+        this.connection_options.put(key, value);
+    }
+
+    @JsonIgnore
+    public void putRuntimeOptions(String key, Object value) {
+        this.runtime_options.put(key, value);
+    }
+
+    @JsonIgnore
+    public void putMetadata(String key, Object value) {
+        this.metadata.put(key, value);
     }
 }

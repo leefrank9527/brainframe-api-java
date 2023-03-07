@@ -1,15 +1,13 @@
 package com.brainframe.api.stub;
 
 import com.brainframe.api.dto.StreamConfiguration;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.lang3.StringUtils;
 
-import java.nio.charset.StandardCharsets;
-import java.time.ZonedDateTime;
+import java.io.IOException;
+import java.util.List;
 
-import org.apache.http.HttpHeaders;
-
-import org.springframework.http.MediaType;
-import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Mono;
 
 public class StubStreamConfiguration extends BaseStub {
     public StubStreamConfiguration(String baseUrl, String bfip) {
@@ -17,20 +15,31 @@ public class StubStreamConfiguration extends BaseStub {
     }
 
     public StreamConfiguration setStreamConfiguration(StreamConfiguration streamConf) {
-//        WebClient client = WebClient.create("http://localhost:8080");
-//        WebClient.UriSpec<WebClient.RequestBodySpec> uriSpec = client.post();
-//        WebClient.RequestBodySpec bodySpec = uriSpec.uri("/api/streams");
-//        WebClient.RequestHeadersSpec<?> headersSpec = bodySpec.body(Mono.just(streamConf), StreamConfiguration.class);
-//        WebClient.ResponseSpec responseSpec = headersSpec.header(
-//                        HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-//                .accept(MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML)
-//                .acceptCharset(StandardCharsets.UTF_8)
-//                .ifNoneMatch("*")
-//                .ifModifiedSince(ZonedDateTime.now())
-//                .retrieve();
-//        Mono<StreamConfiguration> response = headersSpec.retrieve().bodyToMono(StreamConfiguration.class);
-//
-//        return response.block();
-        return (StreamConfiguration) this.post("/api/streams", streamConf, StreamConfiguration.class, StreamConfiguration.class);
+        return (StreamConfiguration) this.post("/api/streams", streamConf, StreamConfiguration.class);
+    }
+
+    public StreamConfiguration getStreamConfiguration(long streamId) {
+        return (StreamConfiguration) this.get(String.format("/api/streams/%s", streamId), StreamConfiguration.class);
+    }
+
+    public List<StreamConfiguration> getStreamConfigurations() {
+        String servicePath = "/api/streams";
+        try {
+            String content = this.get(servicePath);
+            if (StringUtils.isEmpty(content)) {
+                log.error("Failed to request from: {}", servicePath);
+                return null;
+            }
+            ObjectMapper objectMapper = new ObjectMapper();
+            return objectMapper.readValue(content, new TypeReference<List<StreamConfiguration>>() {
+            });
+        } catch (IOException e) {
+            log.error("Failed to read from http entity", e);
+            return null;
+        }
+    }
+
+    public void deleteStreamConfiguration(long streamId) {
+        this.delete(String.format("/api/streams/%s", streamId), StreamConfiguration.class);
     }
 }
