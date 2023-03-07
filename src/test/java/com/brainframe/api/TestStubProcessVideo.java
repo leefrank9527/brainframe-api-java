@@ -14,7 +14,7 @@ public class TestStubProcessVideo implements TestBaseStub {
     private final StubProcessVideo testInstance = new StubProcessVideo(baseUrl, bfIP, aiIntervalType, aiIntervalVal, timeout);
 
     @Test
-    public void testSetStreamConfiguration() {
+    public void testStartProcessVide() {
         StubStreamConfiguration streamApi = new StubStreamConfiguration(baseUrl, bfIP);
 
         StreamConfiguration sc = new StreamConfiguration();
